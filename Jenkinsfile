@@ -49,15 +49,15 @@ pipeline {
                         nexusVersion:  'nexus3',
                         protocol:      'http',
                         nexusUrl:      '35.176.54.105:8081',
-                        repository:    test,
+                        repository:    'test',
                         credentialsId: 'nexus',
-                        groupId:       se.kth.compilers,
-                        version:       1.0-SNAPSHOT,
+                        groupId:       'se.kth.compilers',
+                        version:       '1.0-SNAPSHOT',
                         artifacts: [
                             [
-                                artifactId: java-17-maven-nexus,
+                                artifactId: 'java-17-maven-nexus',
                                 file:       "target/java-17-maven-nexus-1.0-SNAPSHOT.jar}",
-                                type:       jar
+                                type:       'jar'
                             ]
                         ]
                     )
