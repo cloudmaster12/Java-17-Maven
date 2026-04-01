@@ -15,13 +15,13 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh 'mvn clean compile -DskipTests -B'
+                sh 'mvn compile verify'
             }
         }
 
         stage('Unit Test') {
             steps {
-                sh 'mvn test -B'
+                sh 'mvn test'
             }
         }
 
