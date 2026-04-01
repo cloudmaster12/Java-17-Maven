@@ -45,14 +45,14 @@ pipeline {
             steps {
                 script {
                     def pom  = readMavenPom file: 'pom.xml'
-                    def repo = pom.version.endsWith('SNAPSHOT') ? 'maven-snapshots' : 'maven-releases'
+                    def repo = pom.version.endsWith('SNAPSHOT') ? 'test' : 'maven-releases'
 
                     nexusArtifactUploader(
                         nexusVersion:  'nexus3',
                         protocol:      'http',
-                        nexusUrl:      'nexus.example.com:8081',
+                        nexusUrl:      '35.176.54.105:8081',
                         repository:    repo,
-                        credentialsId: 'nexus-credentials',
+                        credentialsId: 'nexus',
                         groupId:       pom.groupId,
                         version:       pom.version,
                         artifacts: [
