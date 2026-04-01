@@ -43,6 +43,7 @@ pipeline {
 
         stage('Push to Nexus') {
             steps {
+                sh 'ls -la target/*.jar'
                 script {
 
                     nexusArtifactUploader(
