@@ -44,8 +44,6 @@ pipeline {
         stage('Push to Nexus') {
             steps {
                 script {
-                    def pom  = readMavenPom file: 'pom.xml'
-                    def repo = pom.version.endsWith('SNAPSHOT') ? 'test' : 'maven-releases'
 
                     nexusArtifactUploader(
                         nexusVersion:  'nexus3',
@@ -53,13 +51,13 @@ pipeline {
                         nexusUrl:      '35.176.54.105:8081',
                         repository:    repo,
                         credentialsId: 'nexus',
-                        groupId:       pom.groupId,
-                        version:       pom.version,
+                        groupId:       se.kth.compilers,
+                        version:       1.0-SNAPSHOT,
                         artifacts: [
                             [
                                 artifactId: pom.artifactId,
-                                file:       "target/${pom.artifactId}-${pom.version}.${pom.packaging ?: 'jar'}",
-                                type:       pom.packaging ?: 'jar'
+                                file:       "target/java-17-maven-nexus-1.0-SNAPSHOT.jar}",
+                                type:       jar
                             ]
                         ]
                     )
