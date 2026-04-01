@@ -56,7 +56,7 @@ pipeline {
                         artifacts: [
                             [
                                 artifactId: 'java-17-maven-nexus',
-                                file:       "target/java-17-maven-nexus-1.0-SNAPSHOT.jar}",
+                                file:       "target/java-17-maven-nexus-1.0-SNAPSHOT.jar",
                                 type:       'jar'
                             ]
                         ]
