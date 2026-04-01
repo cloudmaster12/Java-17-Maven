@@ -1,43 +1,76 @@
 pipeline {
-    agent { label '' }
-    
+    agent any
 
-    environment {
-        JAVA_HOME = "/usr/lib/jvm/java-17-openjdk-amd64"
-        NEXUS_VERSION = "NEXUS3"
-        NEXUS_PROTOCOL = "http"
-        NEXUS_URL = "18.171.241.68:8081"
-        NEXUS_REPOSITORY = "test"
-        NEXUS_CREDENTIAL_ID = "Nexus"
+    tools {
+        maven 'Maven-3.8'
     }
 
     stages {
-        stage('Prepare') {
-            
+
+        stage('Checkout') {
             steps {
                 checkout scm
             }
         }
 
-        stage('Compile') {
-            
+        stage('Build') {
             steps {
-
-                sh 'export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 && mvn verify package'
+                sh 'mvn clean compile -DskipTests -B'
             }
         }
 
         stage('Unit Test') {
-            
             steps {
-                
-                       sh 'export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 && mvn test'
-                   
-               
+                sh 'mvn test -B'
             }
-            
         }
-        
-     }
-        
+
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube-Server') {
+                    sh 'mvn sonar:sonar -B'
+                }
+            }
+        }
+
+        stage('Quality Gate') {
+            steps {
+                timeout(time: 5, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+
+        stage('Push to Nexus') {
+            steps {
+                script {
+                    def pom  = readMavenPom file: 'pom.xml'
+                    def repo = pom.version.endsWith('SNAPSHOT') ? 'maven-snapshots' : 'maven-releases'
+
+                    nexusArtifactUploader(
+                        nexusVersion:  'nexus3',
+                        protocol:      'http',
+                        nexusUrl:      'nexus.example.com:8081',
+                        repository:    repo,
+                        credentialsId: 'nexus-credentials',
+                        groupId:       pom.groupId,
+                        version:       pom.version,
+                        artifacts: [
+                            [
+                                artifactId: pom.artifactId,
+                                file:       "target/${pom.artifactId}-${pom.version}.${pom.packaging ?: 'jar'}",
+                                type:       pom.packaging ?: 'jar'
+                            ]
+                        ]
+                    )
+                }
+            }
+        }
+    }
+
+    post {
+        success { echo 'CI Pipeline passed.' }
+        failure { echo 'CI Pipeline failed.' }
+        always  { cleanWs() }
+    }
 }
