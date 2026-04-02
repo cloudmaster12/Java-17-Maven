@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        maven 'Maven-3.8'
+        maven 'maven'
     }
 
     stages {
@@ -27,7 +27,7 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('SonarQube-Server') {
+                withSonarQubeEnv('SonarQube') {
                     sh 'mvn sonar:sonar -B'
                 }
             }
@@ -49,8 +49,8 @@ pipeline {
                     nexusArtifactUploader(
                         nexusVersion:  'nexus3',
                         protocol:      'http',
-                        nexusUrl:      '35.176.54.105:8081',
-                        repository:    'test',
+                        nexusUrl:      '35.176.182.192:8081',
+                        repository:    'jenkins',
                         credentialsId: 'nexus',
                         groupId:       'se.kth.compilers',
                         version:       '1.0-SNAPSHOT',
